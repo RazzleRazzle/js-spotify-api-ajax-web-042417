@@ -16,29 +16,53 @@ $(function() {
 // and display the chart correctly in index.html
 
 function extractTop10Tracks(tracks) {
-  // your code here
+  return (tracks.slice(0, 10))
 }
 
 function extractPopularity(tracks) {
-  // your code here
+    let popularity = tracks.map(track => track.popularity)
+    return popularity
 }
 
 function extractNames(tracks) {
-  // your code here
+    let names = tracks.map(track => track.name)
+    return names
 }
 
-function chartData(labels, inputData) {
-  // your code here
+// function extractPopularity(bigTracks) {
+//   var pop = bigTracks.tracks.map(function(track) {
+//     return (track["popularity"])
+//   });
+//   return(pop)
+// }
+//
+// function extractNames(bigTracks) {
+//   var names = bigTracks.tracks.map( function(track) {
+//     return (track["name"])
+//   });
+//   return(names)
+//}
 
-  // use the dataSetProperties variable defined above if it helps
+function chartData(labels, inputData) {
+    var arr = Object.assign({}, dataSetProperties, {'data':inputData});
+    var myData = {labels: labels, datasets: [arr]};
+    return myData
 }
 
 function getSpotifyTracks(callback){
   // your ajax call here, on success it should call on the 
   // parameter it's passed (it's a function), and pass it's 
   // parameter the data it received
-
-  // use the url variable defined above if it helps
+  $.ajax({
+      url: url,
+      contentType: "application/json",
+      dataType: 'json',
+      type: 'GET',
+      headers: {
+          Authorization: 'BearBQA0342wjs-H3rkosH5HmjWjjYtZ5gUAXqqhxg2mmRN4fJ7cnRu4I9gh9dzkFb_AVScWcOmS82fSnSoT1imogy3c-fuPsRu5Tf2zR5AZD6c1FOKo3ymuN1Bd6B4LRG3zMHol55Yc22h_mmg'
+      },
+      success: callback
+  })
 }
 
 function success(parsedJSON) {
@@ -46,10 +70,16 @@ function success(parsedJSON) {
   // http://www.chartjs.org/docs/#bar-chart
   // you will need to call on:
   //  1. extractTop20Tracks - pass it tracks
+    var topTracks = extractTop10Tracks(parsedJSON)
   //  2. extractNames -  pass it the result of #1
+    var names = extractNames(parsedJSON)
   //  3. extractPopularity - pass it the result of #1
+    var pop = extractPopularity(parsedJSON)
   //  4. chartData - pass it results of #2 and #3
+    var chart = chartData(names, pop)
   //  5. make a variable `ctx` and select the canvas with the id of spotify-chart
   //     * also make sure to specify 2d context
+    var ctx = document.getElementById('spotify-chart').getContext('2d')
   //  6. make a new bar chart!
+    var myChart = new Chart(ctx).Bar(data)
 }
